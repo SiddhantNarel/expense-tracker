@@ -1,12 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function Navbar({ onMenuClick }) {
   const { darkMode, toggleDarkMode } = useTheme();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    window.location.href = '/login';
+    navigate('/login', { replace: true });
   };
 
   return (

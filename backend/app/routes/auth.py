@@ -16,7 +16,7 @@ def login():
     admin_password_hash = os.environ.get('ADMIN_PASSWORD_HASH', '')
 
     if not admin_password_hash:
-        return jsonify({'error': 'Server not configured for authentication'}), 500
+        return jsonify({'error': 'Authentication service unavailable'}), 500
 
     if username != admin_username or not check_password_hash(admin_password_hash, password):
         return jsonify({'error': 'Invalid credentials'}), 401

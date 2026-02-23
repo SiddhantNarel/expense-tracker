@@ -24,10 +24,11 @@ def create_app(config=None):
     elif app.config.get('DATABASE_PATH'):
         set_db_path(app.config['DATABASE_PATH'])
 
-    CORS(app, resources={r"/api/*": {"origins": [
-        "http://localhost:3000",
-        os.environ.get("FRONTEND_URL", "http://localhost:3000"),
-    ]}})
+    flask_env = os.environ.get('FLASK_ENV', 'development')
+    allowed_origins = [os.environ.get('FRONTEND_URL', 'http://localhost:3000')]
+    if flask_env != 'production':
+        allowed_origins.append('http://localhost:3000')
+    CORS(app, resources={r"/api/*": {"origins": list(set(allowed_origins))}})
 
     JWTManager(app)
 
