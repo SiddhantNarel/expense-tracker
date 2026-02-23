@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from app.database import get_connection
 
 analytics_bp = Blueprint('analytics', __name__)
@@ -16,6 +17,7 @@ def _get_date_range(request):
 
 
 @analytics_bp.route('/analytics/summary', methods=['GET'])
+@jwt_required()
 def summary():
     date_from, date_to = _get_date_range(request)
     conn = get_connection()
@@ -51,6 +53,7 @@ def summary():
 
 
 @analytics_bp.route('/analytics/category-breakdown', methods=['GET'])
+@jwt_required()
 def category_breakdown():
     date_from, date_to = _get_date_range(request)
     conn = get_connection()
@@ -69,6 +72,7 @@ def category_breakdown():
 
 
 @analytics_bp.route('/analytics/trends', methods=['GET'])
+@jwt_required()
 def trends():
     date_from, date_to = _get_date_range(request)
     group_by = request.args.get('group_by', 'day')
@@ -92,6 +96,7 @@ def trends():
 
 
 @analytics_bp.route('/analytics/income-vs-expense', methods=['GET'])
+@jwt_required()
 def income_vs_expense():
     date_from, date_to = _get_date_range(request)
     conn = get_connection()

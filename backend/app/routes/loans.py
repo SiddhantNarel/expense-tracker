@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from app.database import get_connection
 from app.utils.validators import validate_amount, validate_date
 import datetime
@@ -20,6 +21,7 @@ def _calc_balance(friend_id, conn):
 
 
 @loans_bp.route('/friends', methods=['GET'])
+@jwt_required()
 def list_friends():
     conn = get_connection()
     friends = conn.execute("SELECT * FROM friends ORDER BY name").fetchall()
@@ -39,6 +41,7 @@ def list_friends():
 
 
 @loans_bp.route('/friends', methods=['POST'])
+@jwt_required()
 def create_friend():
     data = request.get_json() or {}
     name = data.get('name', '').strip()
@@ -57,6 +60,7 @@ def create_friend():
 
 
 @loans_bp.route('/friends/<int:friend_id>', methods=['PUT'])
+@jwt_required()
 def update_friend(friend_id):
     conn = get_connection()
     existing = conn.execute("SELECT * FROM friends WHERE id=?", (friend_id,)).fetchone()
@@ -76,6 +80,7 @@ def update_friend(friend_id):
 
 
 @loans_bp.route('/friends/<int:friend_id>', methods=['DELETE'])
+@jwt_required()
 def delete_friend(friend_id):
     conn = get_connection()
     existing = conn.execute("SELECT id FROM friends WHERE id=?", (friend_id,)).fetchone()
@@ -89,6 +94,7 @@ def delete_friend(friend_id):
 
 
 @loans_bp.route('/friends/<int:friend_id>/transactions', methods=['GET'])
+@jwt_required()
 def list_transactions(friend_id):
     conn = get_connection()
     friend = conn.execute("SELECT * FROM friends WHERE id=?", (friend_id,)).fetchone()
@@ -109,6 +115,7 @@ def list_transactions(friend_id):
 
 
 @loans_bp.route('/friends/<int:friend_id>/transactions', methods=['POST'])
+@jwt_required()
 def add_transaction(friend_id):
     conn = get_connection()
     friend = conn.execute("SELECT id FROM friends WHERE id=?", (friend_id,)).fetchone()
@@ -144,6 +151,7 @@ def add_transaction(friend_id):
 
 
 @loans_bp.route('/friends/<int:friend_id>/settle', methods=['POST'])
+@jwt_required()
 def settle(friend_id):
     conn = get_connection()
     friend = conn.execute("SELECT id FROM friends WHERE id=?", (friend_id,)).fetchone()

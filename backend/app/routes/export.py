@@ -1,6 +1,7 @@
 import csv
 import io
 from flask import Blueprint, request, Response
+from flask_jwt_extended import jwt_required
 from app.database import get_connection
 
 export_bp = Blueprint('export', __name__)
@@ -19,6 +20,7 @@ def _csv_response(filename, headers, rows):
 
 
 @export_bp.route('/export/expenses', methods=['GET'])
+@jwt_required()
 def export_expenses():
     date_from = request.args.get('from', '2000-01-01')
     date_to = request.args.get('to', '2999-12-31')
@@ -38,6 +40,7 @@ def export_expenses():
 
 
 @export_bp.route('/export/income', methods=['GET'])
+@jwt_required()
 def export_income():
     date_from = request.args.get('from', '2000-01-01')
     date_to = request.args.get('to', '2999-12-31')
@@ -55,6 +58,7 @@ def export_income():
 
 
 @export_bp.route('/export/loans', methods=['GET'])
+@jwt_required()
 def export_loans():
     conn = get_connection()
     rows = conn.execute(
@@ -70,6 +74,7 @@ def export_loans():
 
 
 @export_bp.route('/export/report', methods=['GET'])
+@jwt_required()
 def export_report():
     date_from = request.args.get('from', '2000-01-01')
     date_to = request.args.get('to', '2999-12-31')
