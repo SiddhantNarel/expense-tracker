@@ -21,8 +21,8 @@ services:
       - key: FRONTEND_URL
         sync: false
 
-  - type: static
-    name: expense-tracker-frontend
+staticSites:
+  - name: expense-tracker-frontend
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: build
