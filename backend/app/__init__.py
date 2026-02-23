@@ -2,11 +2,14 @@ import tempfile
 import os
 from flask import Flask
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 from app.database import init_db, set_db_path
 
 
 def create_app(config=None):
     app = Flask(__name__)
+
+    app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'dev-secret-key-change-in-production')
 
     if config:
         app.config.update(config)
@@ -21,10 +24,16 @@ def create_app(config=None):
     elif app.config.get('DATABASE_PATH'):
         set_db_path(app.config['DATABASE_PATH'])
 
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    CORS(app, resources={r"/api/*": {"origins": [
+        "http://localhost:3000",
+        os.environ.get("FRONTEND_URL", "http://localhost:3000"),
+    ]}})
+
+    JWTManager(app)
 
     init_db()
 
+    from app.routes.auth import auth_bp
     from app.routes.expenses import expenses_bp
     from app.routes.income import income_bp
     from app.routes.loans import loans_bp
@@ -34,6 +43,7 @@ def create_app(config=None):
     from app.routes.export import export_bp
     from app.routes.settings import settings_bp
 
+    app.register_blueprint(auth_bp, url_prefix='/api')
     app.register_blueprint(expenses_bp, url_prefix='/api')
     app.register_blueprint(income_bp, url_prefix='/api')
     app.register_blueprint(loans_bp, url_prefix='/api')

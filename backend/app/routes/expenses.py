@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from app.database import get_connection
 from app.utils.validators import validate_amount, validate_date, validate_payment_method
 
@@ -10,6 +11,7 @@ def row_to_dict(row):
 
 
 @expenses_bp.route('/expenses', methods=['GET'])
+@jwt_required()
 def list_expenses():
     conn = get_connection()
     c = conn.cursor()
@@ -71,6 +73,7 @@ def list_expenses():
 
 
 @expenses_bp.route('/expenses/<int:expense_id>', methods=['GET'])
+@jwt_required()
 def get_expense(expense_id):
     conn = get_connection()
     row = conn.execute(
@@ -85,6 +88,7 @@ def get_expense(expense_id):
 
 
 @expenses_bp.route('/expenses', methods=['POST'])
+@jwt_required()
 def create_expense():
     data = request.get_json() or {}
     amount, err = validate_amount(data.get('amount'))
@@ -115,6 +119,7 @@ def create_expense():
 
 
 @expenses_bp.route('/expenses/<int:expense_id>', methods=['PUT'])
+@jwt_required()
 def update_expense(expense_id):
     conn = get_connection()
     existing = conn.execute("SELECT * FROM expenses WHERE id=?", (expense_id,)).fetchone()
@@ -159,6 +164,7 @@ def update_expense(expense_id):
 
 
 @expenses_bp.route('/expenses/<int:expense_id>', methods=['DELETE'])
+@jwt_required()
 def delete_expense(expense_id):
     conn = get_connection()
     existing = conn.execute("SELECT id FROM expenses WHERE id=?", (expense_id,)).fetchone()

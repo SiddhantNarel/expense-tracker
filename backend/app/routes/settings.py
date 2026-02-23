@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from app.database import get_connection
 
 settings_bp = Blueprint('settings', __name__)
 
 
 @settings_bp.route('/settings', methods=['GET'])
+@jwt_required()
 def get_settings():
     conn = get_connection()
     rows = conn.execute("SELECT key, value FROM settings").fetchall()
@@ -13,6 +15,7 @@ def get_settings():
 
 
 @settings_bp.route('/settings', methods=['PUT'])
+@jwt_required()
 def update_settings():
     data = request.get_json() or {}
     conn = get_connection()

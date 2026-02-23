@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from app.database import get_connection
 from app.utils.validators import validate_amount, validate_date
 
@@ -8,6 +9,7 @@ INCOME_SOURCES = ['Family', 'Pocket Money', 'Freelance', 'Part-time Job', 'Stipe
 
 
 @income_bp.route('/income', methods=['GET'])
+@jwt_required()
 def list_income():
     conn = get_connection()
     query = "SELECT * FROM income WHERE 1=1"
@@ -53,6 +55,7 @@ def list_income():
 
 
 @income_bp.route('/income', methods=['POST'])
+@jwt_required()
 def create_income():
     data = request.get_json() or {}
     amount, err = validate_amount(data.get('amount'))
@@ -76,6 +79,7 @@ def create_income():
 
 
 @income_bp.route('/income/<int:income_id>', methods=['PUT'])
+@jwt_required()
 def update_income(income_id):
     conn = get_connection()
     existing = conn.execute("SELECT * FROM income WHERE id=?", (income_id,)).fetchone()
@@ -110,6 +114,7 @@ def update_income(income_id):
 
 
 @income_bp.route('/income/<int:income_id>', methods=['DELETE'])
+@jwt_required()
 def delete_income(income_id):
     conn = get_connection()
     existing = conn.execute("SELECT id FROM income WHERE id=?", (income_id,)).fetchone()
@@ -123,5 +128,6 @@ def delete_income(income_id):
 
 
 @income_bp.route('/income/sources', methods=['GET'])
+@jwt_required()
 def get_sources():
     return jsonify(INCOME_SOURCES)

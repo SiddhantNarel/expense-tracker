@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from app.database import get_connection
 from app.utils.validators import validate_amount
 
@@ -6,6 +7,7 @@ budgets_bp = Blueprint('budgets', __name__)
 
 
 @budgets_bp.route('/budgets', methods=['GET'])
+@jwt_required()
 def list_budgets():
     conn = get_connection()
     month = request.args.get('month')
@@ -24,6 +26,7 @@ def list_budgets():
 
 
 @budgets_bp.route('/budgets', methods=['POST'])
+@jwt_required()
 def set_budget():
     data = request.get_json() or {}
     amount, err = validate_amount(data.get('amount'))
@@ -68,6 +71,7 @@ def set_budget():
 
 
 @budgets_bp.route('/budgets/<int:budget_id>', methods=['DELETE'])
+@jwt_required()
 def delete_budget(budget_id):
     conn = get_connection()
     existing = conn.execute("SELECT id FROM budgets WHERE id=?", (budget_id,)).fetchone()

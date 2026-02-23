@@ -3,6 +3,12 @@ import { useTheme } from '../../context/ThemeContext';
 
 export default function Navbar({ onMenuClick }) {
   const { darkMode, toggleDarkMode } = useTheme();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/login';
+  };
+
   return (
     <header className="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between">
       <button
@@ -21,6 +27,13 @@ export default function Navbar({ onMenuClick }) {
           aria-label="Toggle dark mode"
         >
           {darkMode ? '☀️' : '🌙'}
+        </button>
+        <button
+          onClick={handleLogout}
+          className="px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Logout"
+        >
+          Logout
         </button>
       </div>
     </header>

@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from app.database import get_connection
 
 categories_bp = Blueprint('categories', __name__)
 
 
 @categories_bp.route('/categories', methods=['GET'])
+@jwt_required()
 def list_categories():
     conn = get_connection()
     rows = conn.execute("SELECT * FROM categories ORDER BY is_custom, name").fetchall()
@@ -13,6 +15,7 @@ def list_categories():
 
 
 @categories_bp.route('/categories', methods=['POST'])
+@jwt_required()
 def create_category():
     data = request.get_json() or {}
     name = data.get('name', '').strip()
@@ -31,6 +34,7 @@ def create_category():
 
 
 @categories_bp.route('/categories/<int:cat_id>', methods=['PUT'])
+@jwt_required()
 def update_category(cat_id):
     conn = get_connection()
     existing = conn.execute("SELECT * FROM categories WHERE id=?", (cat_id,)).fetchone()
@@ -50,6 +54,7 @@ def update_category(cat_id):
 
 
 @categories_bp.route('/categories/<int:cat_id>', methods=['DELETE'])
+@jwt_required()
 def delete_category(cat_id):
     conn = get_connection()
     existing = conn.execute("SELECT * FROM categories WHERE id=?", (cat_id,)).fetchone()
